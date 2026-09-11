@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS 
 	award, 						--1
 	character, 					--2
-	creative_type, 				--3
+	--creative_type, 				--3 Dropped
 	director, 					--4
 	rating, 					--5
 	studio, 					--6
@@ -20,7 +20,7 @@ DROP TABLE IF EXISTS
 	bridge_movie_user_review,	--19
 	bridge_movie_studio,		--20
 	bridge_movie_keyword		--21
-;                  		
+CASCADE;                  		
 
 
 -- 1 - create awards tbl
@@ -32,21 +32,22 @@ CREATE TABLE award (
 -- 2 - create character tbl
 CREATE TABLE character (
   id_character INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, 	-- id character is INTEGER, primary key, auto increment
-  character_firstname VARCHAR(100),
-  character_lastname VARCHAR(100)
+  character_name VARCHAR(100)
+  -- character_lastname VARCHAR(100) -- Deleted first name and last name, only use full name
 ); 
 
+-- This creative_type table is deleted
 -- 3 - create creative_type tbl
-CREATE TABLE creative_type (
-  id_creative_type INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  creative_type VARCHAR(100) 
-);
+--CREATE TABLE creative_type (
+  --id_creative_type INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  --creative_type VARCHAR(100) 
+--);
 
 -- 4 - create director tbl
 CREATE TABLE director (
   id_director INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  director_firstname VARCHAR(100),
-  director_lastname VARCHAR(100) 
+  director_name VARCHAR(100)
+  -- director_lastname VARCHAR(100) -- Deleted first name and last name, only use full name
 );
 
 -- 5 - create rating tbl
@@ -86,14 +87,16 @@ CREATE TABLE movie (
   theatre_count INTEGER,
   user_score DECIMAL(5,2),
   meta_score DECIMAL(5,2),
+  creative_type VARCHAR(100), -- put creative_type directly into this table
+  url VARCHAR(255), 		  -- put url colmn directly here
 
   CONSTRAINT fk_movie_rating					-- create id rating as FK 
   	FOREIGN KEY (id_rating) 
-	REFERENCES rating (id_rating),
+	REFERENCES rating (id_rating)
 	
-  CONSTRAINT fk_movie_creative_type				-- create id creative type as FK 
-	FOREIGN KEY (id_creative_type) 
-	REFERENCES creative_type (id_creative_type)
+  --CONSTRAINT fk_movie_creative_type				-- Table is delected
+	--FOREIGN KEY (id_creative_type) 
+	--REFERENCES creative_type (id_creative_type)
 	
 );
 CREATE INDEX idx_movie_id_rating					-- Create an index called fk_movie_rating to make searches involving movie.id_rating faster. Without an index,SQL need to check many rows. lookup structure
@@ -228,6 +231,7 @@ CREATE TABLE expert_review (
   review_date DATE,
   idv_score DECIMAL(5,2),
   review_text VARCHAR(255),
+  url VARCHAR(255),
 
   CONSTRAINT fk_expert_review_liwc
   	FOREIGN KEY (id_liwc) 
@@ -248,6 +252,7 @@ CREATE TABLE user_review (
   thumbs_up DECIMAL(5,2) ,
   thumbs_total DECIMAL(5,2) ,
   review_text VARCHAR(255) ,
+  url VARCHAR(255),
 
   CONSTRAINT fk_user_review_liwc
   	FOREIGN KEY (id_liwc) 
